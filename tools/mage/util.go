@@ -21,6 +21,7 @@ package mage
 import (
 	"errors"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -43,14 +44,42 @@ var (
 func loadYamlFile(path string, out interface{}) error {
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
-		return fmt.Errorf("failed to open '%s': %s", path, err)
+		return fmt.Errorf("failed to open %s: %v", path, err)
 	}
 
 	if err := yaml.Unmarshal(contents, out); err != nil {
-		return fmt.Errorf("failed to parse yaml file '%s': %s", path, err)
+		return fmt.Errorf("failed to parse yaml file %s: %v", path, err)
 	}
 
 	return nil
+}
+
+// Get the AWS session from environment or a config file.
+//
+// If the region isn't set, we will prompt the user for it. Otherwise, we'll return an error message
+func getSession() (*session.Session, error) {
+	s, err := session.NewSession()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create AWS session: %v", err)
+	}
+	if aws.StringValue(s.Config.Region) == "" {
+		return nil, errors.New("no region specified, set AWS_REGION or AWS_DEFAULT_REGION")
+	}
+
+	// Load and cache credentials now so we can report a meaningful error
+	creds, err := s.Config.Credentials.Get()
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok && aerr.Code() == "NoCredentialProviders" {
+			return nil, errors.New("no AWS credentials found, set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY")
+		}
+		return nil, fmt.Errorf("failed to load AWS credentials: %v", err)
+	}
+
+	logger.Debugw("loaded AWS credentials",
+		"provider", creds.ProviderName,
+		"region", s.Config.Region,
+		"accessKeyId", creds.AccessKeyID)
+	return s, nil
 }
 
 // Get CloudFormation stack outputs as a map.
@@ -139,8 +168,7 @@ func download(url string) ([]byte, error) {
 	return ioutil.ReadAll(response.Body)
 }
 
-// isRunningInCI returns true if the mage command is running inside
-// CI environment
+// isRunningInCI returns true if the mage command is running inside a CI environment
 func isRunningInCI() bool {
 	return os.Getenv("CI") != ""
 }

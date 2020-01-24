@@ -56,8 +56,8 @@ func init() {
 	logger = rawLogger.Sugar()
 }
 
-// Log an error and exit (otherwise, mage will print the error again)
-func fatalError(err error) {
+// Log an error and exit (otherwise, if the error is returned, mage will print the error again)
+func fatal(err error) {
 	logger.Error(err)
 	os.Exit(1)
 }

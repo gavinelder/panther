@@ -57,76 +57,84 @@ const (
 // So the comment below is intentionally "Deploy Deploy"
 
 // Deploy Deploy application infrastructure
-func Deploy() error {
+func Deploy() {
 	var config PantherConfig
+	logger.Debugf("loading config file %s", configFile)
 	if err := loadYamlFile(configFile, &config); err != nil {
-		return err
+		fatal(err)
 	}
 
-	awsSession, err := session.NewSession()
+	awsSession, err := getSession()
 	if err != nil {
-		return err
+		fatal(err)
 	}
 
-	bucketParams := map[string]string{
-		"AccessLogsBucketName": config.BucketsParameterValues.AccessLogsBucketName,
-	}
-	if err = deployTemplate(awsSession, bucketTemplate, bucketStack, bucketParams); err != nil {
-		return err
+	bucket, err := deployBuckets(awsSession, &config)
+	if err != nil {
+		fatal(err)
 	}
 
 	if err = Build.Lambda(Build{}); err != nil {
-		return err
+		fatal(err)
 	}
 
 	if err = generateGlueTables(); err != nil {
-		return err
+		fatal(err)
 	}
 
 	if err = embedAPISpecs(); err != nil {
-		return err
+		fatal(err)
 	}
-
-	outputs, err := getStackOutputs(awsSession, bucketStack)
-	if err != nil {
-		return err
-	}
-	bucket := outputs["SourceBucketName"]
 
 	template, err := cfnPackage(applicationTemplate, bucket, applicationStack)
 	if err != nil {
-		return err
+		fatal(err)
 	}
 
 	deployParams, err := getDeployParams(awsSession, &config, bucket)
 	if err != nil {
-		return err
+		fatal(err)
 	}
 
 	if err = deployTemplate(awsSession, template, applicationStack, deployParams); err != nil {
-		return err
+		fatal(err)
 	}
 
-	outputs, err = getStackOutputs(awsSession, applicationStack)
+	//outputs, err := getStackOutputs(awsSession, applicationStack)
+	//if err != nil {
+	//	fatal(err)
+	//}
+	//
+	//if err := enableTOTP(awsSession, outputs["UserPoolId"]); err != nil {
+	//	fatal(err)
+	//}
+	//
+	//if err := setupOrganization(awsSession, outputs["UserPoolId"], outputs["RemediationLambdaArn"]); err != nil {
+	//	fatal(err)
+	//}
+	//
+	//if err := initializeAnalysisSets(awsSession, outputs["AnalysisApiEndpoint"], &config); err != nil {
+	//	fatal(err)
+	//}
+	//
+	//// TODO - underline link
+	//fmt.Printf("\nPanther URL = https://%s\n", outputs["LoadBalancerUrl"])
+}
+
+// Deploy prerequisite S3 buckets, returning S3 bucket name.
+func deployBuckets(awsSession *session.Session, config *PantherConfig) (string, error) {
+	bucketParams := map[string]string{
+		"AccessLogsBucketName": config.BucketsParameterValues.AccessLogsBucketName,
+	}
+	if err := deployTemplate(awsSession, bucketTemplate, bucketStack, bucketParams); err != nil {
+		return "", err
+	}
+
+	outputs, err := getStackOutputs(awsSession, bucketStack)
 	if err != nil {
-		return err
+		return "", err
 	}
-
-	if err := enableTOTP(awsSession, outputs["UserPoolId"]); err != nil {
-		return err
-	}
-
-	if err := setupOrganization(awsSession, outputs["UserPoolId"], outputs["RemediationLambdaArn"]); err != nil {
-		return err
-	}
-
-	if err := initializeAnalysisSets(awsSession, outputs["AnalysisApiEndpoint"], &config); err != nil {
-		return err
-	}
-
-	// TODO - underline link
-	fmt.Printf("\nPanther URL = https://%s\n", outputs["LoadBalancerUrl"])
-	return nil
+	return outputs["SourceBucketName"], nil
 }
 
 // Generate the set of deploy parameters for the main application stack.

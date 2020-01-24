@@ -19,6 +19,8 @@ package main
  */
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/kelseyhightower/envconfig"
 
@@ -40,5 +42,6 @@ var methodHandlers = map[string]gatewayapi.RequestHandler{
 
 func main() {
 	envconfig.MustProcess("", &handlers.Env)
+	fmt.Println("a new line")
 	lambda.Start(gatewayapi.LambdaProxy(methodHandlers))
 }

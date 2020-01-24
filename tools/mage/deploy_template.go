@@ -35,6 +35,20 @@ const (
 	pollTimeout  = time.Hour       // Give up if CreateChangeSet or ExecuteChangeSet takes longer than this
 )
 
+// Recursively apply CloudFormation template transformations.
+//
+// This is similar to "aws cloudformation package", but we rolled our own so that:
+//   - The AWS CLI is not required to develop or deploy panther from source
+//   - We can upload assets to S3 in parallel
+//   - We can skip unchanged function source, even if the timestamp changed
+//
+// Transformations include:
+//   - Directly embed Swagger API + GraphQL definitions
+//   - Upload Lambda source and nested templates to S3
+func transformTemplate(awsSession *session.Session, path string) (string, error) {
+	return "", nil
+}
+
 // Deploy a CloudFormation template.
 //
 // This is our own implementation of "cloudformation deploy" from the AWS CLI.
@@ -54,7 +68,7 @@ func deployTemplate(awsSession *session.Session, templateFile, stack string, par
 //
 // If there are no pending changes, the change set is deleted and a blank name is returned.
 func createChangeSet(awsSession *session.Session, templateFile, stack string, params map[string]string) (string, error) {
-	// Change set name - username + unix time (must be unique)
+	// Change set name - unix time (must be unique)
 	changeSetName := fmt.Sprintf("panther-%d", time.Now().UnixNano())
 
 	// Change set type - CREATE if a new stack otherwise UPDATE
