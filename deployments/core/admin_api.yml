@@ -128,7 +128,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: !Sub cognito-idp.${AWS::URLSuffix}
+              Service: cognito-idp.amazonaws.com
             Action: sts:AssumeRole
       Policies:
         - PolicyName: CognitoSNSPolicy
@@ -351,7 +351,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: !Sub apigateway.${AWS::URLSuffix}
+              Service: apigateway.amazonaws.com
             Action: sts:AssumeRole
       RoleName: PantherAPIGatewayOnboardingRole
       Policies:
@@ -599,7 +599,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: !Sub states.${AWS::Region}.${AWS::URLSuffix}
+              Service: states.amazonaws.com
             Action: sts:AssumeRole
       RoleName: StepFunctionInvokeLambdaRole
       Policies:
