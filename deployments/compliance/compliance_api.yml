@@ -113,7 +113,7 @@ Resources:
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !Ref Function
-      Principal: !Sub apigateway.${AWS::URLSuffix}
+      Principal: !Sub 'apigateway.${AWS::URLSuffix}'
       SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${GatewayApi}/*
 
   ComplianceTable:
