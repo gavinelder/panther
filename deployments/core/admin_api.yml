@@ -150,9 +150,9 @@ Resources:
       KeySchema:
         - AttributeName: id
           KeyType: HASH
-      PointInTimeRecoverySpecification:  # Create periodic table backups
+      PointInTimeRecoverySpecification: # Create periodic table backups
         PointInTimeRecoveryEnabled: True
-      SSESpecification:  # Enable server-side encryption
+      SSESpecification: # Enable server-side encryption
         SSEEnabled: True
       TableName: panther-users
 
@@ -177,13 +177,15 @@ Resources:
       Timeout: !Ref UsersTimeoutSec
       Tracing: !If [TracingEnabled, !Ref TracingMode, !Ref 'AWS::NoValue']
       Policies:
-        - !If [TracingEnabled, 'arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess', !Ref 'AWS::NoValue']
-        -
-          Id: CognitoUserManagement
+        - !If [
+            TracingEnabled,
+            !Sub arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess,
+            !Ref 'AWS::NoValue',
+          ]
+        - Id: CognitoUserManagement
           Version: 2012-10-17
           Statement:
-            -
-              Effect: Allow
+            - Effect: Allow
               Action:
                 - cognito-idp:AdminAddUserToGroup
                 - cognito-idp:AdminCreateUser
@@ -203,47 +205,39 @@ Resources:
                 - cognito-idp:ListUsers
                 - cognito-idp:SetUserPoolMfaConfig
               Resource: !Sub arn:${AWS::Partition}:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/*
-            -
-              Effect: Allow
+            - Effect: Allow
               Action:
                 - cognito-identity:*
                 - cognito-idp:CreateUserPool
               Resource: '*'
-            -
-              Effect: Allow
+            - Effect: Allow
               Action:
                 - iam:GetRole
                 - iam:PassRole
                 - iam:UpdateAssumeRolePolicy
               Resource:
-                - !Sub arn:aws:iam::${AWS::AccountId}:role/CognitoSNSRole
-                - !Sub arn:aws:iam::${AWS::AccountId}:role/DefaultIdentityPoolAuthenticatedRol
-                - !Sub arn:aws:iam::${AWS::AccountId}:role/IdentityPoolAuthenticatedAdminsRole
-        -
-          Id: AppsyncManagement
+                - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/CognitoSNSRole
+                - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/DefaultIdentityPoolAuthenticatedRol
+                - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/IdentityPoolAuthenticatedAdminsRole
+        - Id: AppsyncManagement
           Version: 2012-10-17
           Statement:
-            -
-              Effect: Allow
+            - Effect: Allow
               Action:
                 - appsync:GetGraphqlApi
                 - appsync:ListGraphqlApis
                 - appsync:UpdateGraphqlApi
-              Resource: !Sub arn:aws:appsync:${AWS::Region}:${AWS::AccountId}*
-        -
-          Id: InvokeOrganizationAPI
+              Resource: !Sub arn:${AWS::Partition}:appsync:${AWS::Region}:${AWS::AccountId}*
+        - Id: InvokeOrganizationAPI
           Version: 2012-10-17
           Statement:
-            -
-              Effect: Allow
+            - Effect: Allow
               Action: lambda:InvokeFunction
               Resource: !GetAtt OrganizationAPIFunction.Arn
-        -
-          Id: ManageUsersDB
+        - Id: ManageUsersDB
           Version: 2012-10-17
           Statement:
-            -
-              Effect: Allow
+            - Effect: Allow
               Action:
                 - dynamodb:*Item
                 - dynamodb:Query
@@ -274,9 +268,12 @@ Resources:
       Timeout: !Ref UsersTimeoutSec
       Tracing: !If [TracingEnabled, !Ref TracingMode, !Ref 'AWS::NoValue']
       Policies:
-        - !If [TracingEnabled, 'arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess', !Ref 'AWS::NoValue']
-        -
-          Id: GetCognitoUsers
+        - !If [
+            TracingEnabled,
+            !Sub arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess,
+            !Ref 'AWS::NoValue',
+          ]
+        - Id: GetCognitoUsers
           Version: 2012-10-17
           Statement:
             - Effect: Allow
@@ -302,9 +299,9 @@ Resources:
       KeySchema:
         - AttributeName: id
           KeyType: HASH
-      PointInTimeRecoverySpecification:  # Create periodic table backups
+      PointInTimeRecoverySpecification: # Create periodic table backups
         PointInTimeRecoveryEnabled: True
-      SSESpecification:  # Enable server-side encryption
+      SSESpecification: # Enable server-side encryption
         SSEEnabled: True
       TableName: panther-organization
 
@@ -331,9 +328,12 @@ Resources:
       Timeout: !Ref OrganizationTimeoutSec
       Tracing: !If [TracingEnabled, !Ref TracingMode, !Ref 'AWS::NoValue']
       Policies:
-        - !If [TracingEnabled, 'arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess', !Ref 'AWS::NoValue']
-        -
-          Id: ManageOrganizationTable
+        - !If [
+            TracingEnabled,
+            !Sub arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess,
+            !Ref 'AWS::NoValue',
+          ]
+        - Id: ManageOrganizationTable
           Version: 2012-10-17
           Statement:
             - Effect: Allow
@@ -359,12 +359,10 @@ Resources:
           PolicyDocument:
             Version: 2012-10-17
             Statement:
-              -
-                Effect: Allow
+              - Effect: Allow
                 Action: states:startExecution
-                Resource: !Sub arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:panther-*
-              -
-                Effect: Allow
+                Resource: !Sub arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:panther-*
+              - Effect: Allow
                 Action: lambda:InvokeFunction
                 Resource: !GetAtt UsersAPIFunction.Arn
 
@@ -411,8 +409,7 @@ Resources:
         Credentials: !GetAtt ApiGatewayRole.Arn
         IntegrationHttpMethod: POST
         IntegrationResponses:
-          -
-            ResponseParameters:
+          - ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
               method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
@@ -429,7 +426,7 @@ Resources:
                 "stateMachineArn": "${OnboardOrganizationStateMachine}"
             }
         Type: AWS
-        Uri: arn:aws:apigateway:us-west-2:states:action/StartExecution
+        Uri: !Sub arn:${AWS::Partition}:apigateway:us-west-2:states:action/StartExecution
       MethodResponses:
         - StatusCode: '200'
           ResponseModels:
@@ -440,7 +437,7 @@ Resources:
             method.response.header.Access-Control-Allow-Origin: false
       OperationName: OnboardOrganization
       RequestModels:
-        application/json : !Ref OnboardRequestModel
+        application/json: !Ref OnboardRequestModel
       ResourceId: !Ref OnboardOrganizationResource
       RestApiId: !Ref OnboardOrganizationRestApi
 
@@ -524,7 +521,7 @@ Resources:
                 "getUserOrganizationAccess": {"email" : "$inputRoot.email" }
             }
         Type: AWS
-        Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UsersAPIFunction.Arn}/invocations
+        Uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UsersAPIFunction.Arn}/invocations
       MethodResponses:
         - StatusCode: '200'
           ResponseModels:
@@ -590,7 +587,7 @@ Resources:
         - ApiId: !Ref OnboardOrganizationRestApi
           Stage: !Ref ApiGatewayStageName
       Throttle:
-        BurstLimit : !Ref ApiGatewayThrottleBurstLimit
+        BurstLimit: !Ref ApiGatewayThrottleBurstLimit
         RateLimit: !Ref ApiGatewayThrottleRateLimit
 
   ### Step Function
@@ -632,7 +629,7 @@ Resources:
               },
               "Type": "Task",
               "ResultPath": "$.createOrganizationOutput",
-              "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-organization-api",
+              "Resource": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-organization-api",
               "Next": "CreateInfrastructure"
             },
             "CreateInfrastructure": {
@@ -646,7 +643,7 @@ Resources:
               },
               "Type": "Task",
               "ResultPath": "$.createInfrastructureOutput",
-              "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-users-api",
+              "Resource": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-users-api",
               "Next": "AddUserToOrganization"
             },
             "AddUserToOrganization": {
@@ -657,7 +654,7 @@ Resources:
               },
               "Type": "Task",
               "ResultPath": "$.addUserToOrganizationOutput",
-              "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-users-api",
+              "Resource": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-users-api",
               "Next": "UpdateOrganization"
             },
             "UpdateOrganization": {
@@ -673,7 +670,7 @@ Resources:
                   }
               },
               "Type": "Task",
-              "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-organization-api",
+              "Resource": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-organization-api",
               "End": true
             }
           }
@@ -695,14 +692,17 @@ Resources:
       Tracing: !If [TracingEnabled, !Ref TracingMode, !Ref 'AWS::NoValue']
       Runtime: go1.x
       Policies:
-        - !If [TracingEnabled, 'arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess', !Ref 'AWS::NoValue']
-        -
-          Id: DescribeOrganizationSfn
+        - !If [
+            TracingEnabled,
+            !Sub arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess,
+            !Ref 'AWS::NoValue',
+          ]
+        - Id: DescribeOrganizationSfn
           Version: 2012-10-17
           Statement:
             - Effect: Allow
               Action: states:DescribeExecution
-              Resource: !Sub arn:aws:states:${AWS::Region}:${AWS::AccountId}:execution:${OnboardOrganizationStateMachine.Name}:*
+              Resource: !Sub arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:execution:${OnboardOrganizationStateMachine.Name}:*
 
   OnboardingFunctionLogGroup:
     Type: AWS::Logs::LogGroup

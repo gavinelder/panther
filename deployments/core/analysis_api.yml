@@ -108,7 +108,7 @@ Resources:
       Timeout: !Ref HandlerTimeoutSec
       Tracing: !If [TracingEnabled, !Ref TracingMode, !Ref 'AWS::NoValue']
       Policies:
-        - !If [TracingEnabled, 'arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess', !Ref 'AWS::NoValue']
+        - !If [TracingEnabled, !Sub arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess, !Ref 'AWS::NoValue']
         -
           Id: InvokeApis
           Version: 2012-10-17

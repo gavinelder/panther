@@ -82,14 +82,13 @@ Resources:
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-          -
-            Effect: Allow
+          - Effect: Allow
             Principal: '*'
             Action: sqs:SendMessage
             Resource: '*'
             Condition:
               ArnLike:
-                aws:SourceArn: arn:aws:sns:*:*:*-PantherEventsTopic-*
+                aws:SourceArn: !Sub arn:${AWS::Partition}:sns:*:*:*-PantherEventsTopic-*
       Queues:
         - !Ref EventQueue
 
@@ -121,7 +120,7 @@ Resources:
         Queue:
           Type: SQS
           Properties:
-            BatchSize: 10  # Maximum batch size
+            BatchSize: 10 # Maximum batch size
             Queue: !GetAtt EventQueue.Arn
       FunctionName: panther-aws-event-processor
       Handler: main
@@ -131,9 +130,12 @@ Resources:
       Timeout: !Ref TimeoutSec
       Tracing: !If [TracingEnabled, !Ref TracingMode, !Ref 'AWS::NoValue']
       Policies:
-        - !If [TracingEnabled, 'arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess', !Ref 'AWS::NoValue']
-        -
-          Id: SendAndReceiveSqsMessages
+        - !If [
+            TracingEnabled,
+            !Sub arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess,
+            !Ref 'AWS::NoValue',
+          ]
+        - Id: SendAndReceiveSqsMessages
           Version: 2012-10-17
           Statement:
             - Effect: Allow
@@ -152,24 +154,21 @@ Resources:
                 - sqs:SendMessage
                 - sqs:SendMessageBatch
               Resource: !Sub arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:panther-snapshot-queue
-        -
-          Id: ConfirmSubscription
+        - Id: ConfirmSubscription
           Version: 2012-10-17
           Statement:
             - Effect: Allow
               Action: sns:ConfirmSubscription
-              Resource: arn:aws:sns:*:*:*-PantherEventsTopic-*
-        -
-          Id: DeleteResources
+              Resource: !Sub arn:${AWS::Partition}:sns:*:*:*-PantherEventsTopic-*
+        - Id: DeleteResources
           Version: 2012-10-17
           Statement:
             - Effect: Allow
               Action: execute-api:Invoke
-              Resource: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ResourcesApiId}/v1/POST/delete
-        -
-          Id: InvokeSnapshotAPI
+              Resource: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${ResourcesApiId}/v1/POST/delete
+        - Id: InvokeSnapshotAPI
           Version: 2012-10-17
           Statement:
             - Effect: Allow
               Action: lambda:InvokeFunction
-              Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-snapshot-api
+              Resource: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:panther-snapshot-api
