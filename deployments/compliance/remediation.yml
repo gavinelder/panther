@@ -114,7 +114,7 @@ Resources:
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !Ref ApiFunction
-      Principal: apigateway.${AWS::URLSuffix}
+      Principal: !Sub apigateway.${AWS::URLSuffix}
       SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${GatewayApi}/*
 
   Queue:
@@ -285,7 +285,7 @@ Resources:
       Policies:
         - !If [
             TracingEnabled,
-            !Sub arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess,
+            !Sub 'arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess',
             !Ref 'AWS::NoValue',
           ]
         - Id: AssumeRemediationRole
