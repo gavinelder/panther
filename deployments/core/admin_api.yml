@@ -123,7 +123,7 @@ Resources:
       Policies:
         - !If [
             TracingEnabled,
-            !Sub 'arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess',
+            !Sub 'arn:${AWS::Partition}:iam::aws:policy/AWSXRayDaemonWriteAccess',
             !Ref 'AWS::NoValue',
           ]
         - Id: CognitoUserManagement
@@ -196,7 +196,7 @@ Resources:
       Policies:
         - !If [
             TracingEnabled,
-            !Sub 'arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess',
+            !Sub 'arn:${AWS::Partition}:iam::aws:policy/AWSXRayDaemonWriteAccess',
             !Ref 'AWS::NoValue',
           ]
         - Id: GetCognitoUsers
@@ -256,7 +256,7 @@ Resources:
       Policies:
         - !If [
             TracingEnabled,
-            !Sub 'arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess',
+            !Sub 'arn:${AWS::Partition}:iam::aws:policy/AWSXRayDaemonWriteAccess',
             !Ref 'AWS::NoValue',
           ]
         - Id: ManageOrganizationTable
