@@ -261,7 +261,6 @@ func cfnPackage(templateFile, bucket, stack string) (string, error) {
 		"--output-template-file", pkgOut,
 		"--s3-bucket", bucket,
 		"--s3-prefix", stack,
-		"--region cn-northwest-1",
 		"--template-file", templateFile,
 	}
 
