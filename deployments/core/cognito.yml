@@ -104,7 +104,7 @@ Resources:
           - Effect: Allow
             Principal:
               Service:
-                - !Sub cognito-idp.${AWS::URLSuffix}
+                - cognito-idp.amazonaws.com
             Action: sts:AssumeRole
       Policies:
         - PolicyName: CognitoSNSPolicy
