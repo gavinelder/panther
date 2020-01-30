@@ -114,11 +114,11 @@ Resources:
       Environment:
         Variables:
           DEBUG: !Ref Debug
-          REMEDIATION_SERVICE_HOST: !Sub '${RemediationApiId}.execute-api.${AWS::Region}.amazonaws.com'
+          REMEDIATION_SERVICE_HOST: !Sub '${RemediationApiId}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
           REMEDIATION_SERVICE_PATH: v1
-          COMPLIANCE_SERVICE_HOST: !Sub '${ComplianceApiId}.execute-api.${AWS::Region}.amazonaws.com'
+          COMPLIANCE_SERVICE_HOST: !Sub '${ComplianceApiId}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
           COMPLIANCE_SERVICE_PATH: v1
-          POLICY_SERVICE_HOST: !Sub '${AnalysisApiId}.execute-api.${AWS::Region}.amazonaws.com'
+          POLICY_SERVICE_HOST: !Sub '${AnalysisApiId}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
           POLICY_SERVICE_PATH: v1
           TABLE_NAME: !Ref Table
       Events:
@@ -202,7 +202,7 @@ Resources:
       Description: Forwards the alerts to the alert delivery mechanism
       Environment:
         Variables:
-          ALERTING_QUEUE_URL: !Sub https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/panther-alerts
+          ALERTING_QUEUE_URL: !Sub https://sqs.${AWS::Region}.${AWS::URLSuffix}/${AWS::AccountId}/panther-alerts
           DEBUG: !Ref Debug
       Events:
         DynamoDBEvent:

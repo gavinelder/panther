@@ -114,7 +114,7 @@ Resources:
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !Ref ApiFunction
-      Principal: apigateway.amazonaws.com
+      Principal: apigateway.${AWS::URLSuffix}
       SourceArn: !Sub arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${GatewayApi}/*
 
   Queue:
@@ -145,9 +145,9 @@ Resources:
           DEBUG: !Ref Debug
           SQS_QUEUE_URL: !Ref Queue
           REMEDIATION_LAMBDA_ARN: !GetAtt RemediationFunction.Arn
-          POLICIES_SERVICE_HOSTNAME: !Sub '${AnalysisApiId}.execute-api.${AWS::Region}.amazonaws.com'
+          POLICIES_SERVICE_HOSTNAME: !Sub '${AnalysisApiId}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
           POLICIES_SERVICE_PATH: v1
-          RESOURCES_SERVICE_HOSTNAME: !Sub '${ResourcesApiId}.execute-api.${AWS::Region}.amazonaws.com'
+          RESOURCES_SERVICE_HOSTNAME: !Sub '${ResourcesApiId}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
           RESOURCES_SERVICE_PATH: v1
       FunctionName: panther-remediation-api
       Handler: main
@@ -209,9 +209,9 @@ Resources:
         Variables:
           DEBUG: !Ref Debug
           REMEDIATION_LAMBDA_ARN: !GetAtt RemediationFunction.Arn
-          POLICIES_SERVICE_HOSTNAME: !Sub '${AnalysisApiId}.execute-api.${AWS::Region}.amazonaws.com'
+          POLICIES_SERVICE_HOSTNAME: !Sub '${AnalysisApiId}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
           POLICIES_SERVICE_PATH: v1
-          RESOURCES_SERVICE_HOSTNAME: !Sub '${ResourcesApiId}.execute-api.${AWS::Region}.amazonaws.com'
+          RESOURCES_SERVICE_HOSTNAME: !Sub '${ResourcesApiId}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
           RESOURCES_SERVICE_PATH: v1
       Events:
         Queue:

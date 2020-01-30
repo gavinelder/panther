@@ -135,7 +135,7 @@ Resources:
       Handler: src.main.lambda_handler
       Environment:
         Variables:
-          ANALYSIS_API_FQDN: !Sub '${AnalysisApiId}.execute-api.${AWS::Region}.amazonaws.com'
+          ANALYSIS_API_FQDN: !Sub '${AnalysisApiId}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
           ANALYSIS_API_PATH: v1
           DEBUG: !Ref Debug
           ALERTS_QUEUE: !Ref AlertsQueue

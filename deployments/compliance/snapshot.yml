@@ -111,7 +111,7 @@ Resources:
         Variables:
           AUDIT_ROLE_NAME: !Ref AuditRoleName
           DEBUG: !Ref Debug
-          RESOURCES_API_FQDN: !Sub '${ResourcesApiId}.execute-api.${AWS::Region}.amazonaws.com'
+          RESOURCES_API_FQDN: !Sub '${ResourcesApiId}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
           RESOURCES_API_PATH: v1
           SNAPSHOT_QUEUE_URL: !Ref Queue
       Events:
@@ -194,7 +194,7 @@ Resources:
         Variables:
           DEBUG: !Ref Debug
           SNAPSHOT_POLLERS_QUEUE_URL: !Ref Queue
-          LOG_PROCESSOR_QUEUE_URL: !Sub https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/${LogAnalysisQueueName}
+          LOG_PROCESSOR_QUEUE_URL: !Sub https://sqs.${AWS::Region}.${AWS::URLSuffix}/${AWS::AccountId}/${LogAnalysisQueueName}
           LOG_PROCESSOR_QUEUE_ARN: !Sub arn:${AWS::Partition}:sqs:${AWS::Region}:${AWS::AccountId}:${LogAnalysisQueueName}
           TABLE_NAME: !Ref IntegrationsTable
       FunctionName: panther-snapshot-api

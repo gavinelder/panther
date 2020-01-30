@@ -128,7 +128,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: cognito-idp.amazonaws.com
+              Service: !Sub cognito-idp.${AWS::URLSuffix}
             Action: sts:AssumeRole
       Policies:
         - PolicyName: CognitoSNSPolicy
@@ -285,7 +285,7 @@ Resources:
     Properties:
       FunctionName: !GetAtt CustomMessageTriggerFunction.Arn
       Action: lambda:InvokeFunction
-      Principal: cognito-idp.amazonaws.com
+      Principal: !Sub cognito-idp.${AWS::URLSuffix}
       SourceArn: !Sub arn:${AWS::Partition}:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/*
 
   ##### Organization API #####
@@ -351,7 +351,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: apigateway.amazonaws.com
+              Service: !Sub apigateway.${AWS::URLSuffix}
             Action: sts:AssumeRole
       RoleName: PantherAPIGatewayOnboardingRole
       Policies:
@@ -599,7 +599,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: !Sub states.${AWS::Region}.amazonaws.com
+              Service: !Sub states.${AWS::Region}.${AWS::URLSuffix}
             Action: sts:AssumeRole
       RoleName: StepFunctionInvokeLambdaRole
       Policies:

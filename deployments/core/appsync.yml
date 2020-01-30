@@ -64,7 +64,7 @@ Resources:
           - Effect: Allow
             Action: sts:AssumeRole
             Principal:
-              Service: appsync.amazonaws.com
+              Service: !Sub appsync.${AWS::URLSuffix}
       ManagedPolicyArns:
         - arn:${AWS::Partition}:iam::aws:policy/service-role/AWSAppSyncPushToCloudWatchLogs
       Policies:
