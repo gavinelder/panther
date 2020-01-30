@@ -43,7 +43,7 @@ import { LIST_DESTINATIONS, ListDestinationsQueryData } from 'Pages/destinations
 import { capitalize, extractErrorMessage } from 'Helpers/utils';
 
 const ADD_DESTINATION = gql`
-  mutation AddSlackDestination($input: DestinationInput!) {
+  mutation AddDestination($input: DestinationInput!) {
     addDestination(input: $input) {
       createdBy
       creationTime
@@ -72,6 +72,7 @@ const ADD_DESTINATION = gql`
           userName
           apiKey
           assigneeId
+          issueType
         }
         opsgenie {
           apiKey
@@ -200,6 +201,7 @@ const AddDestinationSidesheet: React.FC<AddDestinationSidesheetProps> = ({ desti
                   userName: '',
                   apiKey: '',
                   assigneeId: '',
+                  issueType: null,
                 },
               },
             }}

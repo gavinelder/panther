@@ -43,7 +43,7 @@ import {
 import { extractErrorMessage } from 'Helpers/utils';
 
 const UPDATE_DESTINATION = gql`
-  mutation UpdateSlackDestination($input: DestinationInput!) {
+  mutation UpdateDestination($input: DestinationInput!) {
     updateDestination(input: $input) {
       createdBy
       creationTime
@@ -72,6 +72,7 @@ const UPDATE_DESTINATION = gql`
           userName
           apiKey
           assigneeId
+          issueType
         }
         opsgenie {
           apiKey
@@ -191,6 +192,7 @@ export const UpdateDestinationSidesheet: React.FC<UpdateDestinationSidesheetProp
                 'jira.userName',
                 'jira.apiKey',
                 'jira.assigneeId',
+                'jira.issueType',
               ]),
             }}
             onSubmit={handleSubmit}

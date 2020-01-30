@@ -50,12 +50,12 @@ func (client *OutputClient) Jira(
 		"project": map[string]*string{
 			"key": config.ProjectKey,
 		},
-		"issuetype": map[string]string{
-			"name": "Task",
+		"issuetype": map[string]*string{
+			"name": config.Type,
 		},
 	}
 
-	if config.AssigneeID != nil {
+	if aws.StringValue(config.AssigneeID) != "" {
 		fields["assignee"] = map[string]*string{
 			"id": config.AssigneeID,
 		}

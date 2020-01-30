@@ -33,10 +33,16 @@ type backendParameters struct {
 	TracingMode                  string `yaml:"TracingMode"`
 }
 
+type frontendParameters struct {
+	WebApplicationFargateTaskCPU    int `yaml:"WebApplicationFargateTaskCPU"`
+	WebApplicationFargateTaskMemory int `yaml:"WebApplicationFargateTaskMemory"`
+}
+
 // PantherConfig describes the panther_config.yml file.
 type PantherConfig struct {
-	BucketsParameterValues bucketsParameters `yaml:"BucketsParameterValues"`
-	BackendParameterValues backendParameters `yaml:"BackendParameterValues"`
-	PipLayer               []string          `yaml:"PipLayer"`
-	InitialAnalysisSets    []string          `yaml:"InitialAnalysisSets"`
+	BucketsParameterValues  bucketsParameters  `yaml:"BucketsParameterValues"`
+	BackendParameterValues  backendParameters  `yaml:"BackendParameterValues"`
+	FrontendParameterValues frontendParameters `yaml:"FrontendParameterValues"`
+	PipLayer                []string           `yaml:"PipLayer"`
+	InitialAnalysisSets     []string           `yaml:"InitialAnalysisSets"`
 }

@@ -61,28 +61,30 @@ input ListIntegrationsInput {
 
 input GetAlertInput {
   alertId: ID!
-  eventPageSize: Int
-  eventPage: Int
+  eventsPageSize: Int
+  eventsExclusiveStartKey: String
 }
 
 type AlertDetails {
   alertId: ID!
-  rule: RuleDetails
-  creationTime: AWSDateTime
-  lastEventMatched: AWSDateTime
-  events: [AWSJSON!]
+  ruleId: ID
+  creationTime: AWSDateTime!
+  lastEventMatched: AWSDateTime!
+  eventsMatched: Int!
+  events: [AWSJSON!]!
+  eventsLastEvaluatedKey: String!
 }
 
 type ListAlertsResponse {
-  alertSummaries: [AlertSummary]
+  alertSummaries: [AlertSummary]!
   lastEvaluatedKey: String
 }
 
 type AlertSummary {
-  alertId: String
-  creationTime: AWSDateTime
-  eventsMatched: Int
-  lastEventMatched: AWSDateTime
+  alertId: String!
+  creationTime: AWSDateTime!
+  eventsMatched: Int!
+  lastEventMatched: AWSDateTime!
   ruleId: String
   severity: String
 }
@@ -361,6 +363,7 @@ type JiraConfig {
   userName: String!
   apiKey: String!
   assigneeId: String
+  issueType: JiraIssueTypesEnum
 }
 
 type GithubConfig {
@@ -417,6 +420,7 @@ input JiraConfigInput {
   userName: String!
   apiKey: String!
   assigneeId: String
+  issueType: JiraIssueTypesEnum
 }
 
 input GithubConfigInput {
@@ -675,6 +679,12 @@ enum SeverityEnum {
   MEDIUM
   HIGH
   CRITICAL
+}
+
+enum JiraIssueTypesEnum {
+  Bug
+  Story
+  Task
 }
 
 enum AccountTypeEnum {

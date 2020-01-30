@@ -16,36 +16,46 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import JsonViewer from 'Components/json-viewer';
 import Panel from 'Components/panel';
 import PaginationControls from 'Components/utils/table-pagination-controls';
+import { DEFAULT_LARGE_PAGE_SIZE } from 'Source/constants';
 
 interface AlertEventsProps {
   events: string[];
+  total: number;
+  fetchMore: () => void;
 }
 
-const AlertEvents: React.FC<AlertEventsProps> = ({ events }) => {
+const AlertEvents: React.FC<AlertEventsProps> = ({ events, total, fetchMore }) => {
   // because we are going to use that in PaginationControls we are starting an indexing starting
-  // from 1 instead of 0. That's why we are using `eventIndex - 1` when selecting the proper event.
+  // from 1 instead of 0. That's why we are using `eventDisplayIndex - 1` when selecting the proper event.
   // Normally the `PaginationControls` are used for displaying pages so they are built with a
   // 1-based indexing in mind
-  const [eventIndex, setEventIndex] = useState(1);
+  const [eventDisplayIndex, setEventDisplayIndex] = React.useState(1);
+
+  React.useEffect(() => {
+    if (eventDisplayIndex - 1 === events.length - DEFAULT_LARGE_PAGE_SIZE) {
+      fetchMore();
+    }
+  }, [eventDisplayIndex]);
+
   return (
     <Panel
       size="large"
       title="Triggered Events"
       actions={
         <PaginationControls
-          page={eventIndex}
-          totalPages={events.length}
-          onPageChange={setEventIndex}
+          page={eventDisplayIndex}
+          totalPages={total}
+          onPageChange={setEventDisplayIndex}
         />
       }
     >
-      <JsonViewer data={JSON.parse(JSON.parse(events[eventIndex - 1]))} />
+      <JsonViewer data={JSON.parse(JSON.parse(events[eventDisplayIndex - 1]))} />
     </Panel>
   );
 };
 
-export default AlertEvents;
+export default React.memo(AlertEvents);
