@@ -51,7 +51,6 @@ Parameters:
       - me-south-1
       - sa-east-1
       # AWS China Regions
-      - cn-north-1
       - cn-northwest-1
       # AWS Gov Cloud
       - us-gov-east-1
