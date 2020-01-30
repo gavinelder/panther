@@ -180,7 +180,7 @@ Resources:
       Policies:
         - !If [
             TracingEnabled,
-            !Sub arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess,
+            !Sub 'arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess',
             !Ref 'AWS::NoValue',
           ]
         - Id: OutputsTables
@@ -268,7 +268,11 @@ Resources:
       Timeout: !Ref DeliveryFunctionTimeoutSec
       Tracing: !If [TracingEnabled, !Ref TracingMode, !Ref 'AWS::NoValue']
       Policies:
-        - !If [TracingEnabled, !Sub arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess, !Ref 'AWS::NoValue']
+        - !If [
+            TracingEnabled,
+            !Sub 'arn:${AWS::Partition}:iam::aws:policy/AWSXrayWriteOnlyAccess',
+            !Ref 'AWS::NoValue',
+          ]
         - Id: OutputsAPI
           Version: 2012-10-17
           Statement:
